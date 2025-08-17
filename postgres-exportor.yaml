@@ -1,0 +1,28 @@
+config:
+  datasource:
+    host: "postgres-svc.student-api.svc.cluster.local"
+    port: "5432"
+    userSecret:
+      name: "dev-db"
+      key: "POSTGRES_USER"
+    passwordSecret:
+      name: "dev-db"
+      key: "POSTGRES_PASSWORD"
+
+externalSecret:
+  name: external-secrets
+  namespace: observability
+  refreshInterval: "15s"
+  targetSecretName: dev-db
+  secretKey: DBSECRETS
+
+clusterSecretStore:
+  name: external-secretsstores
+
+serviceMonitor:
+  enabled: true
+  namespace: observability
+  interval: 5s
+  labels:
+    release: prometheus      
+

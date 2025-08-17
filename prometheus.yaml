@@ -1,0 +1,122 @@
+
+
+crds:
+  enabled: true
+
+
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: 'Blackbox-exporter'
+        metrics_path: /probe
+        params:
+          module: [http2xx]
+        static_configs:
+          - targets:
+            - http://restapi-service.student-api.svc.cluster.local:8080/HealthCheck
+            - http://restapi-service.student-api.svc.cluster.local:8080/GetAllStudents
+            - http://restapi-service.student-api.svc.cluster.local:8080/GetStudent?id=1
+            - http://restapi-service.student-api.svc.cluster.local:8080/docs
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'Vault'
+        metrics_path: /probe
+        params:
+          module: [http2xx]
+        static_configs:
+          - targets:
+            - http://vault.vault.svc.cluster.local:8200/v1/sys/health
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'Argocd'
+        metrics_path: /probe
+        params:
+          module: [http2xx]
+        static_configs:
+          - targets:
+            - http://argocd-server.argocd.svc.cluster.local:80/healthz
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'PostgreSQL'
+        metrics_path: /probe
+        params:
+          module: [tcp_connect]
+        static_configs:
+          - targets:
+            -  postgres-svc.student-api.svc.cluster.local:5432
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'Loki'
+        metrics_path: /probe
+        params:
+          module: [http2xx]
+        static_configs:
+          - targets:
+            - http://loki.observability.svc.cluster.local:3100/ready
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'Prometheus'
+        metrics_path: /probe
+        params:
+          module: [http2xx]
+        static_configs:
+          - targets:
+            - http://prometheus-operated.observability.svc.cluster.local:9090/-/healthy
+            - http://prometheus-operated.observability.svc.cluster.local:9090/-/ready
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: __param_target
+          - source_labels: [__param_target]
+            target_label: instance
+          - target_label: __address__
+            replacement: blackbox-exporter-prometheus-blackbox-exporter.observability.svc.cluster.local:9115
+      - job_name: 'Restapi'
+        metrics_path: /metrics
+        static_configs:
+          - targets:
+            - restapi-service.student-api.svc.cluster.local:8080
+grafana:
+  enabled: false
+
+prometheusOperator:
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+      
+kube-state-metrics:
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "100m"
+    limits:
+      memory: "128Mi"
+      cpu: "200m"

@@ -1,0 +1,28 @@
+server: 
+  enabled: true
+
+
+
+config:
+  modules:
+    http2xx:
+      prober: http
+      timeout: 5s
+      http:
+        method: GET
+        valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+        follow_redirects: true
+        preferred_ip_protocol: "ip4"
+        valid_status_codes: [200]
+        headers:
+          Accept: application/json
+    tcp_connect:
+      prober: tcp
+      timeout: 5s
+
+serviceMonitor:
+  selfMonitor:
+    enabled: true
+
+commonLabels:
+  release: prometheus
