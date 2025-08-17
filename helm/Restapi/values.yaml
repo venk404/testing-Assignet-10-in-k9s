@@ -1,0 +1,21 @@
+namespace: student-api
+application:
+  replicaCount: 1
+  name: restapi
+  port: 8002
+  configname: postgres
+  secretName: dev-db
+  image:
+    repository: venkateshtangaraj/studentapi
+    tag: 1.0.0
+  migration:
+    image:
+      repository: venkateshtangaraj/db_migration
+      tag: 1.0.0
+  service:
+    type: NodePort
+    port: 8080
+    nodePort: 30007
+  postgresql:
+    host: postgres-svc
+    port: 5432

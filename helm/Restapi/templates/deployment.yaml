@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restapi-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.application.name }}
+spec:
+  replicas: {{ .Values.application.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.application.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.application.name }}
+    spec:
+      containers:
+      - name: {{ .Values.application.name }}
+        image: "{{ .Values.application.image.repository }}:v{{ .Values.application.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.application.port }}
+        envFrom:
+        - secretRef:
+            name: dev-db
+        env:
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.configname }}-config
+              key: postgres_port
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.configname }}-config
+              key: postgres_host
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.configname }}-config
+              key: port
+      initContainers:
+      - name: migration
+        image: "{{ .Values.application.migration.image.repository }}:v{{ .Values.application.migration.image.tag }}"
+        envFrom:
+        - secretRef:
+            name: dev-db
+        env:
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.configname }}-config
+              key: postgres_port
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.application.configname }}-config
+              key: postgres_host

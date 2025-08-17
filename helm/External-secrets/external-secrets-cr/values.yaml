@@ -1,0 +1,23 @@
+externalSecret:
+  name: external-secrets
+  namespace: student-api
+  refreshInterval: "15s"
+  targetSecretName: dev-db
+  secretKey: DBSECRETS
+
+secret:
+  name: vault-token
+  namespace: external-secrets
+  token: "your-vault-token-here"
+
+clusterSecretStore:
+  name: external-secretsstores
+  provider:
+    vault:
+      server: "http://vault.vault.svc.cluster.local:8200"
+      path: "secrets"
+      version: "v2"
+      tokenSecretRef:
+        name: "vault-token"
+        namespace: "external-secrets"
+        key: "token"

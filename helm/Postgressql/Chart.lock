@@ -1,0 +1,12 @@
+dependencies:
+- name: vault
+  repository: file://charts/vault
+  version: 0.29.1
+- name: external-secrets
+  repository: file://charts/external-secrets
+  version: 0.9.0
+- name: postgresql
+  repository: file://charts/postgresql
+  version: 0.1.0
+digest: sha256:ae25deab5322acc21780c9a60e41cd1f202e42cc3c78a07ec9f7383b9145dba9
+generated: "2025-02-15T05:02:32.0215357+05:30"

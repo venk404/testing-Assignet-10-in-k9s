@@ -1,0 +1,21 @@
+namespace: student-api
+postgres:
+  Name: postgres
+  image: postgres:17.3
+  port: 8002
+  secretName: dev-db
+  serviceName: postgres
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "250m"
+    limits:
+      memory: "3Gi"
+      cpu: "500m"
+  storage:
+    size: 3Gi
+    storageClass: manual
+    hostPath: /data/postgres-pv
+  postgresql:
+    host: postgres-svc
+    port: 5432
